@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Despesa;
 use App\Http\Requests\DespesaRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,10 +27,15 @@ class DespesasController extends Controller
     {
         $despesas = new Despesa;
         if ($request->pesquisa) {
-            return response($despesas->where('users_id', $request->pesquisa)->get());
+            return response(
+                $despesas
+                    ->where('users_id', $request->pesquisa)
+                    ->with('user')
+                    ->get()
+            );
         }
 
-        return response($despesas->all());
+        return response($despesas->with('user')->get());
     }
 
     /**

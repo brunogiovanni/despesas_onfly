@@ -27,7 +27,7 @@ class DespesaRequest
             'descricao' => 'required|max:191',
             'valor' => 'required|numeric|gt:0',
             'data' => 'required|date',
-            'users_id' => 'required|integer',
+            'users_id' => 'required|integer|exists:users,id',
         ];
     }
 
@@ -43,6 +43,7 @@ class DespesaRequest
             'data.date' => 'Informe uma data válida (ano-mes-dia)',
             'users_id.required' => 'Informe o usuário',
             'users_id.integer' => 'Id do usuário deve ser um número',
+            'users_id.exists' => 'Usuário não encontrado',
         ];
     }
 }
