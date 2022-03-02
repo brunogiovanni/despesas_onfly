@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DespesasController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('despesas', [DespesasController::class, 'index']);
+Route::get('despesa/{id}', [DespesasController::class, 'show']);
+Route::post('despesa', [DespesasController::class, 'store']);
+Route::put('despesa/{id}', [DespesasController::class, 'update']);
+Route::delete('despesa/{id}', [DespesasController::class, 'destroy']);
