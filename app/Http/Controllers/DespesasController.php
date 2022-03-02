@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Despesa;
 use App\Http\Requests\DespesaRequest;
+use App\Jobs\SendMailJob;
+use App\Mail\DespesaMail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class DespesasController extends Controller
@@ -52,12 +55,20 @@ class DespesasController extends Controller
             return response(['errors' => $validated->errors()], 400);
         }
 
-        Despesa::create([
+        $despesa = Despesa::create([
             'descricao' => $request->descricao,
             'valor' => $request->valor,
             'data' => $request->data,
-            'users_id' => $request->users_id,
+            // 'users_id' => $request->users_id,
+            'users_id' => auth()->user()->id,
         ]);
+
+        if (!$despesa) {
+            return response(['erro' => 'Erro ao cadastrar despesa'], 400);
+        }
+        Mail::to(auth()->user()->email)
+            ->queue(new DespesaMail($despesa));
+        // dispatch(new SendMailJob(auth()->user()->email, $despesa));
 
         return response(['message' => 'Sucesso']);
     }
