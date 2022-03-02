@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DespesasController;
+use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,3 +25,9 @@ Route::get('despesa/{id}', [DespesasController::class, 'show']);
 Route::post('despesa', [DespesasController::class, 'store']);
 Route::put('despesa/{id}', [DespesasController::class, 'update']);
 Route::delete('despesa/{id}', [DespesasController::class, 'destroy']);
+
+Route::get('users', [UsersController::class, 'index']);
+Route::get('user/{id}', [UsersController::class, 'show']);
+Route::post('user', [UsersController::class, 'store']);
+Route::put('user/{id}', [UsersController::class, 'update']);
+Route::delete('user/{id}', [UsersController::class, 'destroy']);

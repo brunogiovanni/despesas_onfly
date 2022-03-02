@@ -3,32 +3,47 @@
 namespace App\Http\Controllers;
 
 use App\Models\Despesa;
+use App\Http\Requests\DespesaRequest;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Validator;
+use Illuminate\Support\Facades\Validator;
 
 class DespesasController extends Controller
 {
+    private $despesaRequest;
+
+    public function __construct()
+    {
+        $this->despesaRequest = new DespesaRequest();
+    }
+
     /**
      * Display a listing of the resource.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response(Despesa::all());
+        $despesas = new Despesa;
+        if ($request->pesquisa) {
+            return response($despesas->where('users_id', $request->pesquisa)->get());
+        }
+
+        return response($despesas->all());
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param \App\Http\Requests\DespesaRequest $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $validated = $request->validated();
-        if (!$validated) {
-            throw new \Illuminate\Validation\ValidationException($validated);
+        $validated = Validator::make($request->all(), $this->despesaRequest->rules(), $this->despesaRequest->messages());
+
+        if ($validated->fails()) {
+            return response(['errors' => $validated->errors()], 400);
         }
 
         Despesa::create([
@@ -54,21 +69,22 @@ class DespesasController extends Controller
             return response(Despesa::find($id));
         }
 
-        return response(['message' => 'Nada encontrado'], 404);
+        return response(['error' => 'Nada encontrado'], 404);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\DespesaRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $validated = $request->validated();
-        if (!$validated) {
-            throw new \Illuminate\Validation\ValidationException($validated);
+        $validated = Validator::make($request->all(), $this->despesaRequest->rules(), $this->despesaRequest->messages());
+
+        if ($validated->fails()) {
+            return response(['errors' => $validated->errors()], 400);
         }
 
         $despesa = Despesa::findOrFail($id);
@@ -90,10 +106,14 @@ class DespesasController extends Controller
      */
     public function destroy($id)
     {
+        $despesa = Despesa::find($id);
+        if (!$despesa) {
+            return response(['error' => 'Despesa não encontrada'], 400);
+        }
         if (Despesa::destroy($id)) {
             return response(['message' => 'Apagado com sucesso']);
         }
 
-        return response(['message' => 'Erro ao executar ação'], 400);
+        return response(['error' => 'Erro ao executar ação'], 400);
     }
 }
