@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Despesa;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -11,6 +12,11 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class DespesaFactory extends Factory
 {
     /**
+     * @var string
+     */
+    protected $model = Despesa::class;
+
+    /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
@@ -18,10 +24,10 @@ class DespesaFactory extends Factory
     public function definition()
     {
         return [
-            'descricao' => $this->faker->name(),
+            'descricao' => $this->faker->text(191),
             'data' => now(),
             'valor' => $this->faker->randomFloat(2),
-            'users_id' => $this->faker->unique()->numberBetween(1, User::count()),
+            'users_id' => $this->faker->numberBetween(1, User::count()),
         ];
     }
 }
