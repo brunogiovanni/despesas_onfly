@@ -27,3 +27,11 @@ Para monitorar a fila do Redis:
 Para executar a fila:
 
 `vendor/bin/sail php artisan queue:work`
+
+**Ver os e-mails "enviados" no Mailhog**
+
+http://localhost:8025
+
+**Testes**
+
+`vendor/bin/sail php artisan test`
