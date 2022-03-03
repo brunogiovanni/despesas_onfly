@@ -32,13 +32,31 @@ class DespesasController extends Controller
         if ($request->pesquisa) {
             return response(
                 $despesas
-                    ->where('users_id', $request->pesquisa)
-                    ->with('user')
+                    ->join('users', 'despesas.users_id', 'users.id')
+                    ->orWhere('users_id', $request->pesquisa)
+                    ->orWhere('users.name', 'like', "%$request->pesquisa%")
+                    ->select([
+                        'despesas.id',
+                        'despesas.valor',
+                        'despesas.data',
+                        'despesas.descricao',
+                        'users.name',
+                        'users.email',
+                    ])
                     ->get()
             );
         }
 
-        return response($despesas->with('user')->get());
+        return response($despesas->join('users', 'despesas.users_id', 'users.id')
+            ->select([
+                'despesas.id',
+                'despesas.valor',
+                'despesas.data',
+                'despesas.descricao',
+                'users.name',
+                'users.email',
+            ])
+            ->get());
     }
 
     /**

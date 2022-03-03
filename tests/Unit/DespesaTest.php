@@ -30,20 +30,11 @@ class DespesaTest extends TestCase
             ->assertJsonStructure([
                 '*' => [
                     "id",
-                    "descricao",
                     "valor",
                     "data",
-                    "users_id",
-                    "created_at",
-                    "updated_at",
-                    "user" => [
-                        "id",
-                        "name",
-                        "email",
-                        "email_verified_at",
-                        "created_at",
-                        "updated_at",
-                    ],
+                    "descricao",
+                    "name",
+                    "email",
                 ],
             ]);
     }
@@ -65,20 +56,11 @@ class DespesaTest extends TestCase
             ->assertJsonStructure([
                 '*' => [
                     "id",
-                    "descricao",
                     "valor",
                     "data",
-                    "users_id",
-                    "created_at",
-                    "updated_at",
-                    "user" => [
-                        "id",
-                        "name",
-                        "email",
-                        "email_verified_at",
-                        "created_at",
-                        "updated_at",
-                    ],
+                    "descricao",
+                    "name",
+                    "email",
                 ],
             ]);
     }
