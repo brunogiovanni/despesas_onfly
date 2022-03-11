@@ -53,7 +53,10 @@ class User extends Authenticatable
 
     public static function validate(Request $request): \Illuminate\Contracts\Validation\Validator
     {
-        return Validator::make($request->all(), User::rules(), User::messages());
+        if ($request->method() === 'PUT') {
+            return Validator::make($request->all(), User::rulesUpdate($request->id), User::messages());
+        }
+        return Validator::make($request->all(), User::rulesStore(), User::messages());
     }
 
     /**
@@ -61,11 +64,24 @@ class User extends Authenticatable
      *
      * @return array
      */
-    public static function rules(): array
+    public static function rulesStore(): array
     {
         return [
-            'email' => 'required|email|unique:users',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required',
+            'name' => 'required',
+        ];
+    }
+
+    /**
+     * Array de regras de validação
+     *
+     * @return array
+     */
+    public static function rulesUpdate(int $userId): array
+    {
+        return [
+            'email' => 'required|email|unique:users,email,' . $userId,
             'name' => 'required',
         ];
     }

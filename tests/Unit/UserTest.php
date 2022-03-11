@@ -62,8 +62,7 @@ class UserTest extends TestCase
      */
     public function test_store()
     {
-        // Sanctum::actingAs(User::factory()->create(), ['*']);
-        $fakeUser = User::factory()->create()->makeVisible('password')->toArray();
+        $fakeUser = User::factory()->make()->makeVisible('password')->toArray();
         $response = $this->postJson('/api/register', $fakeUser);
 
         $response
