@@ -11,6 +11,16 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      redis:
+        image: 'redis:alpine'
+        ports:
+          - '${FORWARD_REDIS_PORT:-6379}:6379'
+        healthcheck:
+          test: [ "CMD", "redis-cli", "ping" ]
+          retries: 3
+          timeout: 5s
+
     steps:
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
