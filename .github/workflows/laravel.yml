@@ -22,6 +22,7 @@ jobs:
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
         php-version: '8.1'
+        extensions: redis,swoole
     - uses: actions/checkout@v2
     - name: Copy .env
       run: cp .env.ci .env
@@ -32,5 +33,10 @@ jobs:
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
     - name: Execute tests (Unit and Feature tests) via PHPUnit
+      env:
+        REDIS_HOST: redis
+        REDIS_PASSWORD: null
+        REDIS_PORT: 6379
+        QUEUE_CONNECTION: redis
       run:
         vendor/bin/phpunit
