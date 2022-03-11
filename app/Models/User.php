@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -42,8 +46,43 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function despesas()
+    public function despesas(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Despesa::class, 'users_id', 'id');
+    }
+
+    public static function validate(Request $request): \Illuminate\Contracts\Validation\Validator
+    {
+        return Validator::make($request->all(), User::rules(), User::messages());
+    }
+
+    /**
+     * Array de regras de validação
+     *
+     * @return array
+     */
+    public static function rules(): array
+    {
+        return [
+            'email' => 'required|email|unique:users',
+            'password' => 'required',
+            'name' => 'required',
+        ];
+    }
+
+    /**
+     * Array de mensagens de erro de validação
+     *
+     * @return array
+     */
+    public static function messages(): array
+    {
+        return [
+            'email.required' => 'Informe o e-mail do usuário',
+            'email.email' => 'Informe um e-mail válido',
+            'email.unique' => 'E-mail já cadastrado',
+            'password.required' => 'Informe uma senha',
+            'name.required' => 'Informe o nome do usuário',
+        ];
     }
 }

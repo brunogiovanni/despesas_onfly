@@ -1,37 +1,35 @@
 # Controle de despesas
 
-Teste aplicado pela OnFly
-
 **Requisitos:**
 - PHP 8.1
 - Composer
 - Docker
 
-Crie o arquivo .env antes de continuar, preenchendo os valores de usuário e senha do banco de dados. O restante, deixe igual ao .env.example.
+#
+**Já vem com configuração básica para o VSCode poder abrir o projeto dentro de container**
+> Para isso, basta ter a extensão ___Remote - Containers___ da Microsoft
+#
 
+Suba os containers e em seguida execute o `composer install` para instalar os pacotes necessários.
 
-**Para executar os containers:**
+_Se abrir pela conexão remota de container do vscode, execute os comandos pelo terminal do próprio editor._
 
-`vendor/bin/sail up -d`
+Crie o arquivo _.env_, preenchendo os valores de usuário e senha do banco de dados e as configurações de e-mail. O restante, deixe igual ao _.env.example_.
 
 **Migrations:**
 
-`vendor/bin/sail php artisan migrate`
+`php artisan migrate`
 
 **Queue:**
 
 Para monitorar a fila do Redis:
 
-`vendor/bin/sail php artisan queue:monitor redis:default`
+`php artisan queue:monitor redis:default`
 
 Para executar a fila:
 
-`vendor/bin/sail php artisan queue:work`
-
-**Ver os e-mails "enviados" no Mailhog**
-
-http://localhost:8025
+`php artisan queue:work`
 
 **Testes**
 
-`vendor/bin/sail php artisan test`
+`php artisan test`

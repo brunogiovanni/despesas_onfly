@@ -1,24 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Despesa;
-use App\Http\Requests\DespesaRequest;
 use App\Jobs\SendMailJob;
-use App\Mail\DespesaMail;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 
 class DespesasController extends Controller
 {
-    private $despesaRequest;
-
-    public function __construct()
-    {
-        $this->despesaRequest = new DespesaRequest();
-    }
 
     /**
      * Display a listing of the resource.
@@ -26,37 +19,23 @@ class DespesasController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         $despesas = new Despesa;
         if ($request->pesquisa) {
             return response(
                 $despesas
-                    ->join('users', 'despesas.users_id', 'users.id')
+                    ->whereRelation('user', 'name', 'like', "%$request->pesquisa%")
                     ->orWhere('users_id', $request->pesquisa)
-                    ->orWhere('users.name', 'like', "%$request->pesquisa%")
-                    ->select([
-                        'despesas.id',
-                        'despesas.valor',
-                        'despesas.data',
-                        'despesas.descricao',
-                        'users.name',
-                        'users.email',
-                    ])
+                    ->with('user')
                     ->get()
             );
         }
 
-        return response($despesas->join('users', 'despesas.users_id', 'users.id')
-            ->select([
-                'despesas.id',
-                'despesas.valor',
-                'despesas.data',
-                'despesas.descricao',
-                'users.name',
-                'users.email',
-            ])
-            ->get());
+        return response(
+            $despesas->with('user')
+                ->get()
+        );
     }
 
     /**
@@ -65,10 +44,9 @@ class DespesasController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): Response
     {
-        $validated = Validator::make($request->all(), $this->despesaRequest->rules(), $this->despesaRequest->messages());
-
+        $validated = Despesa::validate($request);
         if ($validated->fails()) {
             return response(['errors' => $validated->errors()], 400);
         }
@@ -77,16 +55,15 @@ class DespesasController extends Controller
             'descricao' => $request->descricao,
             'valor' => $request->valor,
             'data' => $request->data,
-            // 'users_id' => $request->users_id,
             'users_id' => auth()->user()->id,
         ]);
 
         if (!$despesa) {
             return response(['erro' => 'Erro ao cadastrar despesa'], 400);
         }
-        Mail::to(auth()->user()->email)
-            ->queue(new DespesaMail($despesa));
-        // dispatch(new SendMailJob(auth()->user()->email, $despesa));
+        // Mail::to(auth()->user()->email)
+        //     ->queue(new DespesaMail($despesa));
+        dispatch(new SendMailJob(auth()->user()->email, $despesa));
 
         return response(['message' => 'Sucesso']);
     }
@@ -97,7 +74,7 @@ class DespesasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         $despesa = Despesa::find($id);
         if ($despesa) {
@@ -114,10 +91,9 @@ class DespesasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): Response
     {
-        $validated = Validator::make($request->all(), $this->despesaRequest->rules(), $this->despesaRequest->messages());
-
+        $validated = Despesa::validate($request);
         if ($validated->fails()) {
             return response(['errors' => $validated->errors()], 400);
         }
@@ -139,7 +115,7 @@ class DespesasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id): Response
     {
         $despesa = Despesa::find($id);
         if (!$despesa) {

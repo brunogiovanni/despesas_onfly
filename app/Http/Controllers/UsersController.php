@@ -2,27 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
 {
-    private $userRequest;
-
-    public function __construct()
-    {
-        $this->userRequest = new UserRequest();
-    }
-
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): Response
     {
         return response(User::all());
     }
@@ -33,9 +26,9 @@ class UsersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): Response
     {
-        $validated = Validator::make($request->all(), $this->userRequest->rules(), $this->userRequest->messages());
+        $validated = User::validate($request);
         if ($validated->fails()) {
             return response(['errors' => $validated->errors()], 400);
         }
@@ -58,7 +51,7 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id): Response
     {
         $user = User::find($id);
         if (!$user) {
@@ -75,8 +68,13 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id): Response
     {
+        $validated = User::validate($request);
+        if ($validated->fails()) {
+            return response(['errors' => $validated->errors()], 400);
+        }
+
         $user = User::find($id);
         if (!$user) {
             return response(['error' => 'Usuário não encontrado'], 404);
@@ -97,7 +95,7 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id): Response
     {
         $user = User::find($id);
         if (!$user) {

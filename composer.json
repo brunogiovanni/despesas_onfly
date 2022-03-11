@@ -1,8 +1,7 @@
 {
-    "name": "laravel/laravel",
+    "name": "despesas/despesas",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Sistema de registro de despesas",
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
