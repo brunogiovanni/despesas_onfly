@@ -153,7 +153,7 @@ class DespesaTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJson([
-                'message' => 'Apagado com sucesso',
+                'message' => 'Sucesso',
             ]);
     }
 }

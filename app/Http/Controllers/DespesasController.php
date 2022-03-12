@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\Despesa;
-use App\Jobs\SendMailJob;
+use App\Services\DespesaServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Validator;
 
 class DespesasController extends Controller
 {
+    public function __construct(
+        private DespesaServiceInterface $despesaService
+    ) {
+    }
 
     /**
      * Display a listing of the resource.
@@ -21,21 +23,9 @@ class DespesasController extends Controller
      */
     public function index(Request $request): Response
     {
-        $despesas = new Despesa;
-        if ($request->pesquisa) {
-            return response(
-                $despesas
-                    ->whereRelation('user', 'name', 'like', "%$request->pesquisa%")
-                    ->orWhere('users_id', $request->pesquisa)
-                    ->with('user')
-                    ->get()
-            );
-        }
+        $despesas = $this->despesaService->getDespesas($request);
 
-        return response(
-            $despesas->with('user')
-                ->get()
-        );
+        return response($despesas);
     }
 
     /**
@@ -46,26 +36,9 @@ class DespesasController extends Controller
      */
     public function store(Request $request): Response
     {
-        $validated = Despesa::validate($request);
-        if ($validated->fails()) {
-            return response(['errors' => $validated->errors()], 400);
-        }
+        $result = $this->despesaService->createDespesa($request);
 
-        $despesa = Despesa::create([
-            'descricao' => $request->descricao,
-            'valor' => $request->valor,
-            'data' => $request->data,
-            'users_id' => auth()->user()->id,
-        ]);
-
-        if (!$despesa) {
-            return response(['erro' => 'Erro ao cadastrar despesa'], 400);
-        }
-        // Mail::to(auth()->user()->email)
-        //     ->queue(new DespesaMail($despesa));
-        dispatch(new SendMailJob(auth()->user()->email, $despesa));
-
-        return response(['message' => 'Sucesso']);
+        return response(['message' => $result['message']], $result['status']);
     }
 
     /**
@@ -76,12 +49,9 @@ class DespesasController extends Controller
      */
     public function show(int $id): Response
     {
-        $despesa = Despesa::find($id);
-        if ($despesa) {
-            return response(Despesa::find($id));
-        }
+        $result = $this->despesaService->getDespesa($id);
 
-        return response(['error' => 'Nada encontrado'], 404);
+        return response($result['message'], $result['status']);
     }
 
     /**
@@ -93,20 +63,9 @@ class DespesasController extends Controller
      */
     public function update(Request $request, int $id): Response
     {
-        $validated = Despesa::validate($request);
-        if ($validated->fails()) {
-            return response(['errors' => $validated->errors()], 400);
-        }
+        $result = $this->despesaService->updateDespesa($id, $request);
 
-        $despesa = Despesa::findOrFail($id);
-
-        $despesa->descricao = $request->descricao;
-        $despesa->valor = $request->valor;
-        $despesa->data = $request->data;
-
-        $despesa->save();
-
-        return response(['message' => 'Sucesso']);
+        return response(['message' => $result['message']], $result['status']);
     }
 
     /**
@@ -117,14 +76,8 @@ class DespesasController extends Controller
      */
     public function destroy(int $id): Response
     {
-        $despesa = Despesa::find($id);
-        if (!$despesa) {
-            return response(['error' => 'Despesa não encontrada'], 400);
-        }
-        if (Despesa::destroy($id)) {
-            return response(['message' => 'Apagado com sucesso']);
-        }
+        $result = $this->despesaService->deleteDespesa($id);
 
-        return response(['error' => 'Erro ao executar ação'], 400);
+        return response(['message' => $result['message']], $result['status']);
     }
 }
