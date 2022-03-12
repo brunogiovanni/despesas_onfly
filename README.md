@@ -1,5 +1,7 @@
 # Controle de despesas
 
+[![Laravel](https://github.com/brunogiovanni/despesas_onfly/actions/workflows/laravel.yml/badge.svg)](https://github.com/brunogiovanni/despesas_onfly/actions/workflows/laravel.yml)
+
 **Requisitos:**
 - PHP 8.1
 - Composer
