@@ -18,7 +18,7 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function test_index()
+    public function testIndex()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
         User::factory()->count(5)->create()->toArray();
@@ -41,10 +41,10 @@ class UserTest extends TestCase
 
     /**
      * Teste de validação de campos
-     * 
+     *
      * @return void
      */
-    public function test_validation()
+    public function testValidation()
     {
         // Sanctum::actingAs(User::factory()->create(), ['*']);
 
@@ -60,7 +60,7 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function test_store()
+    public function testStore()
     {
         $fakeUser = User::factory()->make()->makeVisible('password')->toArray();
         $response = $this->postJson('/api/register', $fakeUser);
@@ -77,7 +77,7 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function test_update()
+    public function testUpdate()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
 
@@ -96,7 +96,7 @@ class UserTest extends TestCase
      *
      * @return void
      */
-    public function test_destroy()
+    public function testDestroy()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
 

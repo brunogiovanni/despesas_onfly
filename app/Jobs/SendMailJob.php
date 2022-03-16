@@ -5,11 +5,11 @@ namespace App\Jobs;
 use App\Mail\DespesaMail;
 use App\Models\Despesa;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class SendMailJob implements ShouldQueue
@@ -23,10 +23,8 @@ class SendMailJob implements ShouldQueue
      */
     public function __construct(
         private string $emailAddress,
-        private Despesa $despesa)
-    {
-        $this->emailAddress = $emailAddress;
-        $this->despesa = $despesa;
+        private Despesa $despesa
+    ) {
     }
 
     /**
@@ -36,6 +34,14 @@ class SendMailJob implements ShouldQueue
      */
     public function handle()
     {
+        Log::build([
+            'driver' => 'single',
+            'path' => storage_path('logs/emailData.log'),
+        ])->info('despesa', $this->despesa->toArray());
+        Log::build([
+            'driver' => 'single',
+            'path' => storage_path('logs/email.log'),
+        ])->info('email', [$this->emailAddress]);
         $email = new DespesaMail($this->despesa);
         Mail::to($this->emailAddress)->send($email);
     }

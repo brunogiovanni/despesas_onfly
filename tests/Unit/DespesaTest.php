@@ -19,7 +19,7 @@ class DespesaTest extends TestCase
      *
      * @return void
      */
-    public function test_index()
+    public function testIndex()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
         Despesa::factory()->count(5)->create()->toArray();
@@ -54,7 +54,7 @@ class DespesaTest extends TestCase
      *
      * @return void
      */
-    public function test_index_search()
+    public function testIndexSearch()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
         Despesa::factory()->count(5)->create()->toArray();
@@ -86,10 +86,10 @@ class DespesaTest extends TestCase
 
     /**
      * Teste de validação de campos
-     * 
+     *
      * @return void
      */
-    public function test_validation()
+    public function testValidation()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
 
@@ -105,7 +105,7 @@ class DespesaTest extends TestCase
      *
      * @return void
      */
-    public function test_store()
+    public function testStore()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
 
@@ -124,7 +124,7 @@ class DespesaTest extends TestCase
      *
      * @return void
      */
-    public function test_update()
+    public function testUpdate()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
 
@@ -143,7 +143,7 @@ class DespesaTest extends TestCase
      *
      * @return void
      */
-    public function test_destroy()
+    public function testDestroy()
     {
         Sanctum::actingAs(User::factory()->create(), ['*']);
 

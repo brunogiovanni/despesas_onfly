@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -18,7 +17,7 @@ class AuthTest extends TestCase
      *
      * @return void
      */
-    public function test_login()
+    public function testLogin()
     {
         $user = User::factory()->create([
             'password' => bcrypt($password = 'teste1234')

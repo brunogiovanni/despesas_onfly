@@ -43,7 +43,7 @@ class DespesaService implements DespesaServiceInterface
             return ['message' => $validated->errors(), 'status' => 400];
         }
 
-        $despesa = $this->despesaRepository->createDespesa($request->all());
+        $despesa = $this->despesaRepository->createDespesa([...$request->all(), 'users_id' => auth()->user()->id]);
         if (!$despesa) {
             return ['message' => 'Não foi possível salvar', 'status' => 400];
         }
@@ -55,8 +55,6 @@ class DespesaService implements DespesaServiceInterface
 
     private function dispatchEmail(Despesa $despesa): void
     {
-        // Mail::to(auth()->user()->email)
-        //     ->queue(new DespesaMail($despesa));
         dispatch(new SendMailJob(auth()->user()->email, $despesa));
     }
 
