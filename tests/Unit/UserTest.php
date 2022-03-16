@@ -68,7 +68,7 @@ class UserTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJson([
-                'message' => 'Usuário criado',
+                'message' => 'Sucesso',
             ]);
     }
 
@@ -87,7 +87,7 @@ class UserTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJson([
-                'message' => 'Usuário atualizado',
+                'message' => 'Sucesso',
             ]);
     }
 
@@ -106,7 +106,7 @@ class UserTest extends TestCase
         $response
             ->assertStatus(200)
             ->assertJson([
-                'message' => 'Usuário excluído com sucesso',
+                'message' => 'Sucesso',
             ]);
     }
 }

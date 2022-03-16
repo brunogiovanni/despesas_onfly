@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\UserServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
 {
+    public function __construct(
+        private UserServiceInterface $userService
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +21,7 @@ class UsersController extends Controller
      */
     public function index(): Response
     {
-        return response(User::all());
+        return response($this->userService->getUsers());
     }
 
     /**
@@ -28,21 +32,9 @@ class UsersController extends Controller
      */
     public function store(Request $request): Response
     {
-        $validated = User::validate($request);
-        if ($validated->fails()) {
-            return response(['errors' => $validated->errors()], 400);
-        }
+        $result = $this->userService->createUser($request);
 
-        $userCreated = User::create([
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'name' => $request->name,
-        ]);
-        if (!$userCreated) {
-            return response(['error' => 'Usuário não pode ser criado'], 400);
-        }
-
-        return response(['message' => 'Usuário criado']);
+        return response(['message' => $result['message']], $result['status']);
     }
 
     /**
@@ -53,12 +45,9 @@ class UsersController extends Controller
      */
     public function show(int $id): Response
     {
-        $user = User::find($id);
-        if (!$user) {
-            return response(['error' => 'Usuário não encontrado'], 404);
-        }
+        $result = $this->userService->getUser($id);
 
-        return response($user);
+        return response(['message' => $result['message']], $result['status']);
     }
 
     /**
@@ -70,23 +59,9 @@ class UsersController extends Controller
      */
     public function update(Request $request, int $id): Response
     {
-        $validated = User::validate($request);
-        if ($validated->fails()) {
-            return response(['errors' => $validated->errors()], 400);
-        }
+        $result = $this->userService->updateUser($id, $request);
 
-        $user = User::find($id);
-        if (!$user) {
-            return response(['error' => 'Usuário não encontrado'], 404);
-        }
-        $user->name = $request->name;
-        $user->email = $request->email;
-
-        if (!$user->save()) {
-            return response(['error' => 'Usuário não pode ser atualizado'], 400);
-        }
-
-        return response(['message' => 'Usuário atualizado']);
+        return response(['message' => $result['message']], $result['status']);
     }
 
     /**
@@ -97,15 +72,8 @@ class UsersController extends Controller
      */
     public function destroy(int $id): Response
     {
-        $user = User::find($id);
-        if (!$user) {
-            return response(['error' => 'Usuário não encontrado'], 404);
-        }
+        $result = $this->userService->deleteUser($id);
 
-        if (!User::destroy($id)) {
-            return response(['error' => 'Erro ao excluir usuário'], 400);
-        }
-
-        return response(['message' => 'Usuário excluído com sucesso']);
+        return response(['message' => $result['message']], $result['status']);
     }
 }

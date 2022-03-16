@@ -1,31 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Response;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private AuthService $authService
+    ) {
+    }
+
     /**
      * Handle an authentication attempt.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): Response
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $result = $this->authService->login($request);
 
-        if (Auth::attempt($credentials)) {
-            $token = auth()->user()->createToken(date('ymdHisT'))->plainTextToken;
+        return response(['message' => $result['message']], $result['status']);
+    }
 
-            return response()->json(['token' => $token], 200);
-        }
+    public function logout(): Response
+    {
+        $this->authService->logout();
 
-        return response()->json(['error' => 'Não autorizado'], 401);
+        return response(['message' => 'Deslogado com sucesso'], 200);
     }
 }
